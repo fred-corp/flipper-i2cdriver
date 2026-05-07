@@ -1,38 +1,51 @@
 #include <furi.h>
 #include <gui/gui.h>
+#include <input/input.h>
 #include "i2cdriver_app.h"
 #include "i2cdriver_worker.h"
 
+static void input_cb(InputEvent* event, void* ctx) {
+    furi_message_queue_put((FuriMessageQueue*)ctx, event, 0);
+}
+
 int32_t i2cdriver_app(void* p) {
     UNUSED(p);
+
     I2CDriverApp* app = malloc(sizeof(I2CDriverApp));
     memset(app, 0, sizeof(I2CDriverApp));
-    
-    app->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    app->mutex     = furi_mutex_alloc(FuriMutexTypeNormal);
     app->speed_khz = 100;
-    
+
+    // Worker owns USB — start before GUI so USB switches cleanly
     I2CDriverWorker* worker = i2cdriver_worker_alloc(app);
     i2cdriver_worker_start(worker);
 
+    FuriMessageQueue* queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+
     app->view_port = view_port_alloc();
     view_port_draw_callback_set(app->view_port, i2cdriver_draw, app);
-    view_port_input_callback_set(app->view_port, i2cdriver_input, app);
-    
+    view_port_input_callback_set(app->view_port, input_cb, queue);
+
     Gui* gui = furi_record_open(RECORD_GUI);
     gui_add_view_port(gui, app->view_port, GuiLayerFullscreen);
 
-    while(1) {
-        if(furi_hal_gpio_read(&gpio_button_back) == false) break;
-        furi_delay_ms(100);
+    InputEvent event;
+    while(true) {
+        // 100ms timeout so the screen refreshes live stats even without input
+        if(furi_message_queue_get(queue, &event, 100) == FuriStatusOk) {
+            if(event.type == InputTypeRelease && event.key == InputKeyBack) break;
+            i2cdriver_input(&event, app);
+        }
+        view_port_update(app->view_port);
     }
 
     gui_remove_view_port(gui, app->view_port);
     view_port_free(app->view_port);
     furi_record_close(RECORD_GUI);
-    
+    furi_message_queue_free(queue);
+
     i2cdriver_worker_free(worker);
     furi_mutex_free(app->mutex);
     free(app);
-    
     return 0;
 }
