@@ -1,0 +1,17 @@
+App(
+    appid="i2cdriver",
+    name="I2CDriver Bridge",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="i2cdriver_app",
+    cdefines=["APP_I2CDRIVER"],
+    requires=[
+        "gui",
+        "i2c",
+    ],
+    stack_size=4 * 1024,
+    order=176,
+    fap_category="GPIO",
+    fap_author="Fred Corp.",
+    fap_version="1.0",
+    fap_description="Turns Flipper Zero into a USB-to-I2C bridge (I2CDriver protocol)",
+)
