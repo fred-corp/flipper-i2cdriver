@@ -1,5 +1,5 @@
 import serial
-import i2cdriver
+import private.i2cdriver as i2cdriver
 import time
 
 PORT = "/dev/tty.usbmodemflip_Omskufm1"
