@@ -16,7 +16,7 @@ int32_t i2cdriver_app(void* p) {
 
     I2CDriverApp* app = malloc(sizeof(I2CDriverApp));
     memset(app, 0, sizeof(I2CDriverApp));
-    app->mutex     = furi_mutex_alloc(FuriMutexTypeNormal);
+    app->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
     app->speed_khz = 100;
 
     // Worker owns USB — start before GUI so USB switches cleanly

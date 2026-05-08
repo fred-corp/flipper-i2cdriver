@@ -25,17 +25,16 @@ void i2cdriver_log_push(I2CDriverApp* app, const char* fmt, ...) {
 // Each I2C byte transaction pushes 9 "bits" (8 data + 1 ACK).
 // For the display we just show the most recent WAVE_LEN samples.
 
-#define WAVE_W   116  // waveform width in pixels (leave 12px for "SDA"/"SCL" labels)
-#define WAVE_X     12 // x start of waveform
-#define SDA_Y_HI   18 // y when SDA=1 (high)
-#define SDA_Y_LO   23 // y when SDA=0 (low)
-#define SCL_Y_HI   30 // y when SCL=1
-#define SCL_Y_LO   35 // y when SCL=0
+#define WAVE_W   116 // waveform width in pixels (leave 12px for "SDA"/"SCL" labels)
+#define WAVE_X   12 // x start of waveform
+#define SDA_Y_HI 18 // y when SDA=1 (high)
+#define SDA_Y_LO 23 // y when SDA=0 (low)
+#define SCL_Y_HI 30 // y when SCL=1
+#define SCL_Y_LO 35 // y when SCL=0
 
 // Draw one waveform row from a bitmask (MSB = leftmost sample).
 // `nbits` = number of valid bits in `bits` (right-justified).
-static void draw_wave(Canvas* canvas, uint32_t bits, uint8_t nbits,
-                       uint8_t y_hi, uint8_t y_lo) {
+static void draw_wave(Canvas* canvas, uint32_t bits, uint8_t nbits, uint8_t y_hi, uint8_t y_lo) {
     if(nbits == 0) {
         // No data yet — draw idle high line
         canvas_draw_line(canvas, WAVE_X, y_hi, WAVE_X + WAVE_W - 1, y_hi);
@@ -49,9 +48,9 @@ static void draw_wave(Canvas* canvas, uint32_t bits, uint8_t nbits,
 
     for(uint8_t i = 0; i < nbits; i++) {
         uint8_t bit = (bits >> (nbits - 1 - i)) & 1;
-        uint8_t y   = bit ? y_hi : y_lo;
-        uint8_t x0  = WAVE_X + i * px_per_bit;
-        uint8_t x1  = WAVE_X + (i + 1) * px_per_bit - 1;
+        uint8_t y = bit ? y_hi : y_lo;
+        uint8_t x0 = WAVE_X + i * px_per_bit;
+        uint8_t x1 = WAVE_X + (i + 1) * px_per_bit - 1;
         if(x1 >= WAVE_X + WAVE_W) x1 = WAVE_X + WAVE_W - 1;
 
         // Transition edge
@@ -61,7 +60,7 @@ static void draw_wave(Canvas* canvas, uint32_t bits, uint8_t nbits,
         // Horizontal segment
         canvas_draw_line(canvas, x0, y, x1, y);
         prev_y = y;
-        prev   = bit;
+        prev = bit;
     }
 }
 
@@ -79,7 +78,12 @@ void i2cdriver_draw(Canvas* canvas, void* ctx) {
         canvas_draw_rbox(canvas, 0, 0, 128, 12, 2);
         canvas_set_color(canvas, ColorWhite);
         canvas_set_font(canvas, FontPrimary);
-        canvas_draw_str_aligned(canvas, 64, 1, AlignCenter, AlignTop,
+        canvas_draw_str_aligned(
+            canvas,
+            64,
+            1,
+            AlignCenter,
+            AlignTop,
             app->usb_connected ? "I2CDriver  [USB OK]" : "I2CDriver  [wait]");
         canvas_set_color(canvas, ColorBlack);
 

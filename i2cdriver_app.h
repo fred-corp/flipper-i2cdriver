@@ -6,14 +6,14 @@
 #include <input/input.h>
 #include <furi_hal_usb_cdc.h>
 
-#define I2C_BUS         (&furi_hal_i2c_handle_external)
-#define I2C_TIMEOUT_MS  10
+#define I2C_BUS        (&furi_hal_i2c_handle_external)
+#define I2C_TIMEOUT_MS 10
 
-#define CMD_ECHO        'e'
-#define CMD_STATUS      '?'
-#define CMD_SYNC        '@'
+#define CMD_ECHO   'e'
+#define CMD_STATUS '?'
+#define CMD_SYNC   '@'
 
-#define I2CD_SERIAL     "FLIP0001"
+#define I2CD_SERIAL "FLIP0001"
 
 typedef enum {
     AppViewStatus = 0,
@@ -24,7 +24,7 @@ typedef enum {
 #define LOG_LINE_LEN 22
 
 typedef struct {
-    char    lines[LOG_LINES][LOG_LINE_LEN];
+    char lines[LOG_LINES][LOG_LINE_LEN];
     uint8_t head;
     uint8_t count;
 } TxLog;
@@ -34,28 +34,28 @@ typedef struct {
 #define WAVE_BITS 32
 
 typedef struct I2CDriverApp {
-    FuriMutex*    mutex;
+    FuriMutex* mutex;
     volatile bool running;
 
-    ViewPort*  view_port;
-    AppView    view;
+    ViewPort* view_port;
+    AppView view;
 
     // Stats
-    uint32_t   bytes_rx;
-    uint32_t   bytes_tx;
-    uint32_t   cmd_count;
-    uint32_t   speed_khz;
-    bool       bus_started;
-    uint8_t    last_addr8;
-    bool       usb_connected;
+    uint32_t bytes_rx;
+    uint32_t bytes_tx;
+    uint32_t cmd_count;
+    uint32_t speed_khz;
+    bool bus_started;
+    uint8_t last_addr8;
+    bool usb_connected;
 
     // Waveform (SDA/SCL bitmask ring, updated by worker under mutex)
-    uint32_t   wave_sda;    // MSB = oldest sample
-    uint32_t   wave_scl;
-    uint8_t    wave_count;  // total samples pushed (saturates at WAVE_BITS)
+    uint32_t wave_sda; // MSB = oldest sample
+    uint32_t wave_scl;
+    uint8_t wave_count; // total samples pushed (saturates at WAVE_BITS)
 
     // Log
-    TxLog      log;
+    TxLog log;
 } I2CDriverApp;
 
 void i2cdriver_draw(Canvas* canvas, void* ctx);
