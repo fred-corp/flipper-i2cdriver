@@ -3,6 +3,10 @@
 Turns your Flipper Zero into a **USB ↔ I2C bridge** that speaks the [I2CDriver](https://i2cdriver.com/) serial protocol.  
 Once flashed, any host software written against the I2CDriver API will work with your Flipper.
 
+[![Workflow badge](https://github.com/fred-corp/flipper-i2cdriver/actions/workflows/build.yml/badge.svg)](https://github.com/fred-corp/flipper-i2cdriver/actions/workflows/build.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/fred-corp/flipper-i2cdriver)](https://github.com/fred-corp/flipper-i2cdriver/releases)
+
+
 ---
 
 ## TODO
