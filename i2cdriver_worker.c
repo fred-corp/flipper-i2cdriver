@@ -150,6 +150,7 @@ static void process_protocol(I2CDriverWorker *w) {
         if (furi_mutex_acquire(app->mutex, 5) == FuriStatusOk) {
             app->bytes_rx++;
             app->cmd_count++;
+            app->usb_connected = true;
             furi_mutex_release(app->mutex);
         }
 
